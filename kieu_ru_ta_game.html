@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kieu Ru Ta - Vietnamese Poetry Card Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .game-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 30px;
+      max-width: 1200px;
+      width: 100%;
+      position: relative;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      color: #2c3e50;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .header p {
+      color: #7f8c8d;
+      font-size: 1.2em;
+    }
+
+    .setup-screen {
+      text-align: center;
+      padding: 40px;
+    }
+
+    .player-setup {
+      display: flex;
+      justify-content: space-around;
+      margin: 30px 0;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .player-input {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid #e9ecef;
+      min-width: 250px;
+    }
+
+    .player-input h3 {
+      color: #495057;
+      margin-bottom: 15px;
+    }
+
+    .player-input input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .avatar-selection {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: #e9ecef;
+    }
+
+    .avatar.selected {
+      border-color: #007bff;
+      transform: scale(1.1);
+    }
+
+    .start-game-btn {
+      background: linear-gradient(45deg, #28a745, #20c997);
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      border-radius: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .start-game-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+    }
+
+    .game-mode-selection {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .game-mode-selection h3 {
+      color: #495057;
+      margin-bottom: 20px;
+    }
+
+    .mode-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .online-setup {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .room-options {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 30px 0;
+    }
+
+    .room-creation, .room-joining {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid #e9ecef;
+      min-width: 250px;
+    }
+
+    .room-creation h3, .room-joining h3 {
+      color: #495057;
+      margin-bottom: 15px;
+    }
+
+    .room-creation input, .room-joining input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .room-info {
+      background: #e3f2fd;
+      border: 2px solid #2196f3;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .room-info h3 {
+      color: #1976d2;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .invite-link {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .invite-link input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ced4da;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .player-list {
+      margin: 15px 0;
+    }
+
+    .player-item {
+      background: white;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .waiting-message {
+      background: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 20px 0;
+      color: #856404;
+    }
+
+    .hosting-notice {
+      background: #e3f2fd;
+      border: 2px solid #2196f3;
+      border-radius: 15px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .hosting-notice h3 {
+      color: #1976d2;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .hosting-notice ul {
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+
+    .hosting-notice li {
+      margin: 8px 0;
+    }
+
+    .game-screen {
+      display: none;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .player-score {
+      text-align: center;
+      flex: 1;
+    }
+
+    .player-score h3 {
+      color: #495057;
+      margin-bottom: 5px;
+    }
+
+    .score {
+      font-size: 2em;
+      font-weight: bold;
+      color: #007bff;
+    }
+
+    .game-board {
+      background: #f0e4d7;
+      border: 3px solid #8b4513;
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 20px;
+      min-height: 400px;
+      position: relative;
+    }
+
+    .player-area {
+      min-height: 150px;
+      border: 2px dashed #8b4513;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      position: relative;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .player-area:last-child {
+      margin-bottom: 0;
+    }
+
+    .player-area h3 {
+      position: absolute;
+      top: -15px;
+      left: 20px;
+      background: white;
+      padding: 5px 15px;
+      border-radius: 15px;
+      color: #495057;
+      font-size: 14px;
+    }
+
+    .card {
+      width: 120px;
+      height: 80px;
+      background: white;
+      border: 2px solid #8b4513;
+      border-radius: 8px;
+      display: inline-block;
+      margin: 5px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-size: 12px;
+      line-height: 1.3;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .card.selected {
+      border-color: #ffc107;
+      background: #fff3cd;
+      transform: scale(1.05);
+    }
+
+    .card.correct {
+      border-color: #28a745;
+      background: #d4edda;
+      animation: correctPulse 0.6s ease-in-out;
+    }
+
+    .card.incorrect {
+      border-color: #dc3545;
+      background: #f8d7da;
+      animation: incorrectShake 0.6s ease-in-out;
+    }
+
+    @keyframes correctPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes incorrectShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .game-controls {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .current-verse {
+      background: #e3f2fd;
+      border: 2px solid #2196f3;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .current-verse h3 {
+      color: #1976d2;
+      margin-bottom: 10px;
+    }
+
+    .verse-text {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #424242;
+      font-style: italic;
+    }
+
+    .game-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, #007bff, #0056b3);
+      color: white;
+    }
+
+    .btn-success {
+      background: linear-gradient(45deg, #28a745, #1e7e34);
+      color: white;
+    }
+
+    .btn-warning {
+      background: linear-gradient(45deg, #ffc107, #e0a800);
+      color: #212529;
+    }
+
+    .btn-danger {
+      background: linear-gradient(45deg, #dc3545, #c82333);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .timer {
+      font-size: 24px;
+      font-weight: bold;
+      color: #dc3545;
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .winner-screen {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .winner-screen h1 {
+      color: #28a745;
+      font-size: 3em;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .winner-screen h2 {
+      color: #495057;
+      margin-bottom: 30px;
+    }
+
+    .final-scores {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 15px;
+      margin: 20px 0;
+    }
+
+    .penalty-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #dc3545;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      z-index: 1000;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .audio-controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .audio-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      background: #007bff;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .audio-btn:hover {
+      background: #0056b3;
+      transform: scale(1.1);
+    }
+
+    .audio-btn.active {
+      background: #28a745;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .game-container {
+        padding: 15px;
+        margin: 10px;
+      }
+
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .player-setup {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .card {
+        width: 100px;
+        height: 70px;
+        font-size: 11px;
+      }
+
+      .game-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn {
+        width: 200px;
+      }
+
+      .scoreboard {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        width: 80px;
+        height: 60px;
+        font-size: 10px;
+        margin: 3px;
+      }
+
+      .player-area {
+        min-height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <!-- Setup Screen -->
+    <div id="setupScreen" class="setup-screen">
+      <div class="header">
+        <h1>🎌 Kieu Ru Ta 🎌</h1>
+        <p>Vietnamese Traditional Poetry Card Game</p>
+      </div>
+      
+      <div class="game-mode-selection">
+        <h3>Choose Game Mode:</h3>
+        <div class="mode-buttons">
+          <button class="btn btn-primary" onclick="showLocalMode()">🏠 Local Play</button>
+          <button class="btn btn-success" onclick="showOnlineMode()">🌐 Online Play</button>
+        </div>
+      </div>
+      
+      <!-- Local Mode Setup -->
+      <div id="localModeSetup" class="player-setup" style="display: none;">
+        <div class="player-input">
+          <h3>👤 Player 1</h3>
+          <input type="text" id="player1Name" placeholder="Enter Player 1 name" maxlength="20">
+          <div class="avatar-selection">
+            <div class="avatar" data-avatar="👨" onclick="selectAvatar(1, '👨')">👨</div>
+            <div class="avatar" data-avatar="👩" onclick="selectAvatar(1, '👩')">👩</div>
+            <div class="avatar" data-avatar="🧑" onclick="selectAvatar(1, '🧑')">🧑</div>
+            <div class="avatar" data-avatar="👦" onclick="selectAvatar(1, '👦')">👦</div>
+            <div class="avatar" data-avatar="👧" onclick="selectAvatar(1, '👧')">👧</div>
+          </div>
+        </div>
+        
+        <div class="player-input">
+          <h3>👤 Player 2</h3>
+          <input type="text" id="player2Name" placeholder="Enter Player 2 name" maxlength="20">
+          <div class="avatar-selection">
+            <div class="avatar" data-avatar="👨" onclick="selectAvatar(2, '👨')">👨</div>
+            <div class="avatar" data-avatar="👩" onclick="selectAvatar(2, '👩')">👩</div>
+            <div class="avatar" data-avatar="🧑" onclick="selectAvatar(2, '🧑')">🧑</div>
+            <div class="avatar" data-avatar="👦" onclick="selectAvatar(2, '👦')">👦</div>
+            <div class="avatar" data-avatar="👧" onclick="selectAvatar(2, '👧')">👧</div>
+          </div>
+        </div>
+        
+        <button class="start-game-btn" onclick="startLocalGame()">Start Game</button>
+      </div>
+      
+      <!-- Online Mode Setup -->
+      <div id="onlineModeSetup" class="online-setup" style="display: none;">
+        <div id="hostingNotice" class="hosting-notice" style="display: none;">
+          <h3>🌐 Hosting Required for Online Play</h3>
+          <p>To share this game with others, you need to host it on a web server. Here are free options:</p>
+          <ul>
+            <li><strong>GitHub Pages:</strong> Upload to GitHub and enable Pages</li>
+            <li><strong>Netlify:</strong> Drag & drop your HTML file</li>
+            <li><strong>Vercel:</strong> Connect your GitHub repository</li>
+            <li><strong>Firebase Hosting:</strong> Use Firebase CLI</li>
+          </ul>
+          <p>For now, you can share the <strong>Room Code</strong> and both players can join using the same code.</p>
+        </div>
+        
+        <div class="room-options">
+          <div class="room-creation">
+            <h3>🏠 Create Game Room</h3>
+            <input type="text" id="hostPlayerName" placeholder="Enter your name" maxlength="20">
+            <div class="avatar-selection">
+              <div class="avatar" data-avatar="👨" onclick="selectOnlineAvatar('👨')">👨</div>
+              <div class="avatar" data-avatar="👩" onclick="selectOnlineAvatar('👩')">👩</div>
+              <div class="avatar" data-avatar="🧑" onclick="selectOnlineAvatar('🧑')">🧑</div>
+              <div class="avatar" data-avatar="👦" onclick="selectOnlineAvatar('👦')">👦</div>
+              <div class="avatar" data-avatar="👧" onclick="selectOnlineAvatar('👧')">👧</div>
+            </div>
+            <button class="btn btn-primary" onclick="createRoom()">Create Room</button>
+          </div>
+          
+          <div class="room-joining">
+            <h3>🚪 Join Room</h3>
+            <input type="text" id="joinPlayerName" placeholder="Enter your name" maxlength="20">
+            <input type="text" id="roomCode" placeholder="Enter room code" maxlength="6">
+            <button class="btn btn-success" onclick="joinRoom()">Join Room</button>
+          </div>
+        </div>
+        
+        <div id="roomInfo" class="room-info" style="display: none;">
+          <h3>📋 Room Information</h3>
+          <p><strong>Room Code:</strong> <span id="roomCodeDisplay"></span></p>
+          <p><strong>Invite Link:</strong></p>
+          <div class="invite-link">
+            <input type="text" id="inviteLink" readonly>
+            <button class="btn btn-warning" onclick="copyInviteLink()">📋 Copy</button>
+          </div>
+          <p><strong>Players:</strong></p>
+          <div id="playerList"></div>
+          <button class="btn btn-danger" onclick="leaveRoom()">Leave Room</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="game-screen">
+      <div class="header">
+        <h1>🎌 Kieu Ru Ta 🎌</h1>
+      </div>
+      
+      <div class="scoreboard">
+        <div class="player-score">
+          <h3 id="player1Display">Player 1</h3>
+          <div class="score" id="player1Score">10</div>
+        </div>
+        <div class="player-score">
+          <h3 id="player2Display">Player 2</h3>
+          <div class="score" id="player2Score">10</div>
+        </div>
+      </div>
+
+      <div class="game-board">
+        <div class="player-area" id="player1Area">
+          <h3 id="player1AreaTitle">Player 1 Territory</h3>
+          <div id="player1Cards"></div>
+        </div>
+        
+        <div class="current-verse">
+          <h3>🎵 Current Verse</h3>
+          <div class="verse-text" id="verseText">Click "Read Verse" to start</div>
+        </div>
+        
+        <div class="player-area" id="player2Area">
+          <h3 id="player2AreaTitle">Player 2 Territory</h3>
+          <div id="player2Cards"></div>
+        </div>
+      </div>
+
+      <div class="game-controls">
+        <div class="timer" id="timer" style="display: none;">⏱️ 30</div>
+        
+        <div class="game-buttons">
+          <button class="btn btn-primary" id="readVerseBtn" onclick="readVerse()">🎵 Read Verse</button>
+          <button class="btn btn-success" id="nextVerseBtn" onclick="nextVerse()" disabled>➡️ Next Verse</button>
+          <button class="btn btn-warning" id="penaltyBtn" onclick="applyPenalty()">⚖️ Apply Penalty</button>
+          <button class="btn btn-danger" onclick="resetGame()">🔄 Play Again</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Winner Screen -->
+    <div id="winnerScreen" class="winner-screen">
+      <h1>🎉 Congratulations! 🎉</h1>
+      <h2 id="winnerName">Player 1 Wins!</h2>
+      <div class="final-scores">
+        <h3>Final Scores:</h3>
+        <p id="finalScores"></p>
+      </div>
+      <button class="btn btn-primary" onclick="playAgain()">Play Again</button>
+    </div>
+  </div>
+
+  <!-- Audio Controls -->
+  <div class="audio-controls">
+    <button class="audio-btn" id="audioToggle" onclick="toggleAudio()" title="Toggle Audio">🔊</button>
+    <button class="audio-btn" id="readAloudBtn" onclick="readCurrentVerse()" title="Read Current Verse">🎵</button>
+  </div>
+
+  <script>
+    // Game state
+    let gameState = {
+      currentPlayer: 1,
+      gameStarted: false,
+      currentVerse: null,
+      verseIndex: 0,
+      timer: null,
+      timeLeft: 30,
+      audioEnabled: true,
+      selectedCard: null,
+      gamePhase: 'setup', // setup, playing, finished
+      gameMode: 'local', // local, online
+      roomCode: null,
+      isHost: false,
+      onlinePlayers: []
+    };
+
+    // Vietnamese poetry data - 30 verses for the reader's deck
+    const poetryData = [
+      {
+        sixLine: "Công cha như núi Thái Sơn,",
+        eightLine: "Nghĩa mẹ như nước trong nguồn chảy ra."
+      },
+      {
+        sixLine: "Một lòng thờ mẹ, kính cha,",
+        eightLine: "Cho tròn chữ hiếu mới là đạo con."
+      },
+      {
+        sixLine: "Hỡi cô tát nước bên đàng",
+        eightLine: "Sao cô múc ánh trăng vàng đổ đi"
+      },
+      {
+        sixLine: "Trong đầm gì đẹp bằng sen",
+        eightLine: "Lá xanh bông trắng lại chen nhị vàng"
+      },
+      {
+        sixLine: "Nhị vàng, bông trắng, lá xanh",
+        eightLine: "Gần bùn mà chẳng hôi tanh mùi bùn."
+      },
+      {
+        sixLine: "Một cây làm chẳng nên non.",
+        eightLine: "Ba cây chụm lại thành hòn núi cao."
+      },
+      {
+        sixLine: "Bầu ơi thương lấy bí cùng",
+        eightLine: "Tuy rằng khác giống nhưng chung một giàn"
+      },
+      {
+        sixLine: "Khôn ngoan đối đáp người ngoài",
+        eightLine: "Gà cùng một mẹ chớ hoài đá nhau"
+      },
+      {
+        sixLine: "Lời nói chẳng mất tiền mua",
+        eightLine: "Lựa lời mà nói cho vừa lòng nhau"
+      },
+      {
+        sixLine: "Lên non mới biết non cao",
+        eightLine: "Nuôi con mới biết công lao mẹ hiền"
+      },
+      {
+        sixLine: "Mẹ già như chuối ba hương",
+        eightLine: "Như xôi nếp một, như đường mía lau"
+      },
+      {
+        sixLine: "Một miếng khi đói",
+        eightLine: "bằng một gói khi no"
+      },
+      {
+        sixLine: "Ăn trông nồi,",
+        eightLine: "ngồi trông hướng"
+      },
+      {
+        sixLine: "Nhiễu điều phủ lấy giá gương",
+        eightLine: "Người trong một nước phải thương nhau cùng"
+      },
+      {
+        sixLine: "Tốt gỗ hơn tốt nước sơn",
+        eightLine: "Xấu người đẹp nết, còn hơn đẹp người"
+      },
+      {
+        sixLine: "Ai ơi bưng bát cơm đầy",
+        eightLine: "Dẻo thơm một hạt, đắng cay muôn phần"
+      },
+      {
+        sixLine: "Cá không ăn muối cá ươn",
+        eightLine: "Con cãi cha mẹ trăm đường con hư"
+      },
+      {
+        sixLine: "Có công mài sắt",
+        eightLine: "có ngày nên kim"
+      },
+      {
+        sixLine: "Ta về ta tắm ao ta",
+        eightLine: "Dù trong dù đục ao nhà vẫn hơn"
+      },
+      {
+        sixLine: "Gần mực thì đen",
+        eightLine: "gần đèn thì sáng"
+      },
+      // Add 10 more verses to reach 30 total
+      {
+        sixLine: "Có chí thì nên",
+        eightLine: "Có công mài sắt có ngày nên kim"
+      },
+      {
+        sixLine: "Đi một ngày đàng",
+        eightLine: "Học một sàng khôn"
+      },
+      {
+        sixLine: "Học thầy không tày học bạn",
+        eightLine: "Một ngày đàng học một sàng khôn"
+      },
+      {
+        sixLine: "Thương người như thể thương thân",
+        eightLine: "Lá lành đùm lá rách"
+      },
+      {
+        sixLine: "Uống nước nhớ nguồn",
+        eightLine: "Ăn quả nhớ kẻ trồng cây"
+      },
+      {
+        sixLine: "Tốt danh hơn lành áo",
+        eightLine: "Cái nết đánh chết cái đẹp"
+      },
+      {
+        sixLine: "Một con ngựa đau",
+        eightLine: "Cả tàu bỏ cỏ"
+      },
+      {
+        sixLine: "Chim khôn kêu tiếng rảnh rang",
+        eightLine: "Người khôn nói tiếng dịu dàng dễ nghe"
+      },
+      {
+        sixLine: "Lời nói gói vàng",
+        eightLine: "Lời nói chẳng mất tiền mua"
+      },
+      {
+        sixLine: "Có tật giật mình",
+        eightLine: "Làm việc gì cũng phải cẩn thận"
+      }
+    ];
+
+    // Player data
+    let players = {
+      1: { name: 'Player 1', avatar: '👨', cards: [], score: 10 },
+      2: { name: 'Player 2', avatar: '👩', cards: [], score: 10 }
+    };
+
+    // Initialize game
+    function initGame() {
+      // Create reader's deck (30 cards with both 6-line and 8-line)
+      const readerDeck = [...poetryData].sort(() => Math.random() - 0.5);
+      
+      // Create player's deck (30 cards with only 8-line verses)
+      const playerDeck = [...poetryData].sort(() => Math.random() - 0.5);
+      
+      // Deal 10 cards to each player from the player's deck
+      const player1Cards = playerDeck.slice(0, 10);
+      const player2Cards = playerDeck.slice(10, 20);
+      // Remaining 10 cards are "dead" cards (not used)
+      
+      // Distribute cards to players (only 8-line verses)
+      players[1].cards = player1Cards.map((verse, index) => ({
+        id: `p1-${index}`,
+        text: verse.eightLine,
+        sixLine: verse.sixLine,
+        eightLine: verse.eightLine,
+        player: 1
+      }));
+      
+      players[2].cards = player2Cards.map((verse, index) => ({
+        id: `p2-${index}`,
+        text: verse.eightLine,
+        sixLine: verse.sixLine,
+        eightLine: verse.eightLine,
+        player: 2
+      }));
+      
+      // Store reader's deck (30 cards with both verses)
+      gameState.readerCards = readerDeck;
+      gameState.verseIndex = 0;
+      
+      // Update player scores to match card count
+      players[1].score = players[1].cards.length;
+      players[2].score = players[2].cards.length;
+      
+      // Debug: Log the number of reader cards
+      console.log('Reader cards available:', gameState.readerCards.length);
+      console.log('First reader card:', gameState.readerCards[0]);
+      console.log('Player 1 cards:', players[1].cards.length);
+      console.log('Player 2 cards:', players[2].cards.length);
+      
+      updateDisplay();
+    }
+
+    // Update game display
+    function updateDisplay() {
+      // Update player names and avatars
+      document.getElementById('player1Display').textContent = `${players[1].avatar} ${players[1].name}`;
+      document.getElementById('player2Display').textContent = `${players[2].avatar} ${players[2].name}`;
+      document.getElementById('player1AreaTitle').textContent = `${players[1].avatar} ${players[1].name}`;
+      document.getElementById('player2AreaTitle').textContent = `${players[2].avatar} ${players[2].name}`;
+      
+      // Update scores
+      document.getElementById('player1Score').textContent = players[1].score;
+      document.getElementById('player2Score').textContent = players[2].score;
+      
+      // Update cards display
+      updateCardsDisplay();
+    }
+
+    // Update cards display
+    function updateCardsDisplay() {
+      const player1CardsDiv = document.getElementById('player1Cards');
+      const player2CardsDiv = document.getElementById('player2Cards');
+      
+      player1CardsDiv.innerHTML = '';
+      player2CardsDiv.innerHTML = '';
+      
+      // Player 1 cards
+      players[1].cards.forEach(card => {
+        const cardElement = createCardElement(card);
+        player1CardsDiv.appendChild(cardElement);
+      });
+      
+      // Player 2 cards
+      players[2].cards.forEach(card => {
+        const cardElement = createCardElement(card);
+        player2CardsDiv.appendChild(cardElement);
+      });
+    }
+
+    // Create card element
+    function createCardElement(card) {
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'card';
+      cardDiv.id = card.id;
+      cardDiv.textContent = card.text;
+      cardDiv.onclick = () => selectCard(card);
+      return cardDiv;
+    }
+
+    // Select card
+    function selectCard(card) {
+      if (!gameState.gameStarted || gameState.currentVerse === null) return;
+      
+      // Clear previous selection
+      document.querySelectorAll('.card.selected').forEach(el => el.classList.remove('selected'));
+      
+      // Select new card
+      const cardElement = document.getElementById(card.id);
+      cardElement.classList.add('selected');
+      gameState.selectedCard = card;
+      
+      // Check if correct
+      if (card.eightLine === gameState.currentVerse.eightLine) {
+        handleCorrectCard(card);
+      } else {
+        handleIncorrectCard(card);
+      }
+    }
+
+    // Handle correct card
+    function handleCorrectCard(card) {
+      const cardElement = document.getElementById(card.id);
+      cardElement.classList.add('correct');
+      
+      // Play success sound
+      if (gameState.audioEnabled) {
+        playSound('success');
+      }
+      
+      // Update scores and move cards
+      if (card.player === gameState.currentPlayer) {
+        // Player took their own card - decrease their count
+        players[gameState.currentPlayer].score--;
+        removeCardFromPlayer(card.player, card.id);
+      } else {
+        // Player took opponent's card - transfer one of their own cards
+        if (players[gameState.currentPlayer].cards.length > 0) {
+          const randomCard = players[gameState.currentPlayer].cards[Math.floor(Math.random() * players[gameState.currentPlayer].cards.length)];
+          transferCard(gameState.currentPlayer, card.player, randomCard.id);
+        }
+        removeCardFromPlayer(card.player, card.id);
+      }
+      
+      // Check win condition
+      if (players[gameState.currentPlayer].score === 0) {
+        endGame(gameState.currentPlayer);
+        return;
+      }
+      
+      updateDisplay();
+      
+      // Auto-advance to next verse after delay
+      setTimeout(() => {
+        nextVerse();
+      }, 2000);
+    }
+
+    // Handle incorrect card
+    function handleIncorrectCard(card) {
+      const cardElement = document.getElementById(card.id);
+      cardElement.classList.add('incorrect');
+      
+      // Play error sound
+      if (gameState.audioEnabled) {
+        playSound('error');
+      }
+      
+      // Apply penalty
+      applyPenalty();
+      
+      // Remove selection after delay
+      setTimeout(() => {
+        cardElement.classList.remove('incorrect', 'selected');
+        gameState.selectedCard = null;
+      }, 1500);
+    }
+
+    // Remove card from player
+    function removeCardFromPlayer(playerId, cardId) {
+      players[playerId].cards = players[playerId].cards.filter(card => card.id !== cardId);
+    }
+
+    // Transfer card between players
+    function transferCard(fromPlayer, toPlayer, cardId) {
+      const card = players[fromPlayer].cards.find(c => c.id === cardId);
+      if (card) {
+        players[fromPlayer].cards = players[fromPlayer].cards.filter(c => c.id !== cardId);
+        players[toPlayer].cards.push(card);
+        players[toPlayer].score++;
+        players[fromPlayer].score--;
+      }
+    }
+
+    // Read verse
+    function readVerse() {
+      // Check if we have reader cards available
+      if (!gameState.readerCards || gameState.readerCards.length === 0) {
+        alert('No verses available to read! Please restart the game.');
+        return;
+      }
+      
+      if (gameState.verseIndex >= gameState.readerCards.length) {
+        // No more verses, game continues with remaining cards
+        alert('No more verses! Game continues with remaining cards.');
+        return;
+      }
+      
+      gameState.currentVerse = gameState.readerCards[gameState.verseIndex];
+      gameState.verseIndex++;
+      
+      // Display verse
+      document.getElementById('verseText').textContent = gameState.currentVerse.sixLine;
+      
+      // Enable next verse button
+      document.getElementById('nextVerseBtn').disabled = false;
+      document.getElementById('readVerseBtn').disabled = true;
+      
+      // Start timer
+      startTimer();
+      
+      // Read aloud
+      if (gameState.audioEnabled) {
+        readAloud(gameState.currentVerse.sixLine);
+      }
+      
+      // After 30 seconds, read the 8-line
+      setTimeout(() => {
+        if (gameState.currentVerse) {
+          document.getElementById('verseText').textContent = gameState.currentVerse.eightLine;
+          if (gameState.audioEnabled) {
+            readAloud(gameState.currentVerse.eightLine);
+          }
+        }
+      }, 30000);
+    }
+
+    // Next verse
+    function nextVerse() {
+      gameState.currentVerse = null;
+      gameState.selectedCard = null;
+      document.getElementById('verseText').textContent = 'Click "Read Verse" to continue';
+      document.getElementById('readVerseBtn').disabled = false;
+      document.getElementById('nextVerseBtn').disabled = true;
+      clearTimer();
+      
+      // Clear card selections
+      document.querySelectorAll('.card').forEach(el => {
+        el.classList.remove('selected', 'correct', 'incorrect');
+      });
+    }
+
+    // Start timer
+    function startTimer() {
+      gameState.timeLeft = 30;
+      const timerElement = document.getElementById('timer');
+      timerElement.style.display = 'block';
+      
+      gameState.timer = setInterval(() => {
+        gameState.timeLeft--;
+        timerElement.textContent = `⏱️ ${gameState.timeLeft}`;
+        
+        if (gameState.timeLeft <= 0) {
+          clearTimer();
+          nextVerse();
+        }
+      }, 1000);
+    }
+
+    // Clear timer
+    function clearTimer() {
+      if (gameState.timer) {
+        clearInterval(gameState.timer);
+        gameState.timer = null;
+      }
+      document.getElementById('timer').style.display = 'none';
+    }
+
+    // Apply penalty
+    function applyPenalty() {
+      // Randomly select a card from current player to transfer to opponent
+      const currentPlayer = gameState.currentPlayer;
+      const opponent = currentPlayer === 1 ? 2 : 1;
+      
+      if (players[currentPlayer].cards.length > 0) {
+        const randomIndex = Math.floor(Math.random() * players[currentPlayer].cards.length);
+        const cardToTransfer = players[currentPlayer].cards[randomIndex];
+        
+        transferCard(currentPlayer, opponent, cardToTransfer.id);
+        
+        // Show penalty notification
+        showPenaltyNotification(`${players[currentPlayer].name} penalized! Lost 1 card to ${players[opponent].name}`);
+        
+        updateDisplay();
+      }
+    }
+
+    // Show penalty notification
+    function showPenaltyNotification(message) {
+      const notification = document.createElement('div');
+      notification.className = 'penalty-notification';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // End game
+    function endGame(winner) {
+      gameState.gamePhase = 'finished';
+      clearTimer();
+      
+      // Play drum roll and winner announcement
+      if (gameState.audioEnabled) {
+        playDrumRoll();
+        setTimeout(() => {
+          announceWinner(winner);
+        }, 2000);
+      }
+      
+      // Show winner screen
+      document.getElementById('gameScreen').style.display = 'none';
+      document.getElementById('winnerScreen').style.display = 'block';
+      
+      document.getElementById('winnerName').textContent = `${players[winner].avatar} ${players[winner].name} Wins!`;
+      document.getElementById('finalScores').textContent = 
+        `${players[1].name}: ${players[1].score} cards | ${players[2].name}: ${players[2].score} cards`;
+    }
+
+    // Play sound
+    function playSound(type) {
+      if (!gameState.audioEnabled) return;
+      
+      // Create audio context for simple beep sounds
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      if (type === 'success') {
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+      } else if (type === 'error') {
+        oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.1);
+      }
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    }
+
+    // Play drum roll
+    function playDrumRoll() {
+      if (!gameState.audioEnabled) return;
+      
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      
+      for (let i = 0; i < 10; i++) {
+        setTimeout(() => {
+          const oscillator = audioContext.createOscillator();
+          const gainNode = audioContext.createGain();
+          
+          oscillator.connect(gainNode);
+          gainNode.connect(audioContext.destination);
+          
+          oscillator.frequency.setValueAtTime(100 + Math.random() * 50, audioContext.currentTime);
+          gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+          
+          oscillator.start(audioContext.currentTime);
+          oscillator.stop(audioContext.currentTime + 0.1);
+        }, i * 100);
+      }
+    }
+
+    // Announce winner
+    function announceWinner(winner) {
+      if (!gameState.audioEnabled) return;
+      
+      // Use Web Speech API for Vietnamese text-to-speech
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(`${players[winner].name} wins! Congratulations!`);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.8;
+        speechSynthesis.speak(utterance);
+      }
+    }
+
+    // Read aloud
+    function readAloud(text) {
+      if (!gameState.audioEnabled) return;
+      
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'vi-VN';
+        utterance.rate = 0.7;
+        utterance.pitch = 1.1;
+        speechSynthesis.speak(utterance);
+      }
+    }
+
+    // Toggle audio
+    function toggleAudio() {
+      gameState.audioEnabled = !gameState.audioEnabled;
+      const audioBtn = document.getElementById('audioToggle');
+      audioBtn.textContent = gameState.audioEnabled ? '🔊' : '🔇';
+      audioBtn.classList.toggle('active', gameState.audioEnabled);
+    }
+
+    // Read current verse
+    function readCurrentVerse() {
+      if (gameState.currentVerse) {
+        readAloud(gameState.currentVerse.sixLine);
+      }
+    }
+
+    // Select avatar
+    function selectAvatar(playerId, avatar) {
+      players[playerId].avatar = avatar;
+      
+      // Update visual selection
+      document.querySelectorAll(`.player-input:nth-child(${playerId}) .avatar`).forEach(el => {
+        el.classList.remove('selected');
+      });
+      document.querySelector(`.player-input:nth-child(${playerId}) .avatar[data-avatar="${avatar}"]`).classList.add('selected');
+    }
+
+    // Start game
+    function startGame() {
+      const player1Name = document.getElementById('player1Name').value.trim();
+      const player2Name = document.getElementById('player2Name').value.trim();
+      
+      if (!player1Name || !player2Name) {
+        alert('Vui lòng nhập tên cho cả hai người chơi!');
+        return;
+      }
+      
+      players[1].name = player1Name;
+      players[2].name = player2Name;
+
+    // Initialize game
+      initGame();
+      
+      // Show game screen
+      document.getElementById('setupScreen').style.display = 'none';
+      document.getElementById('gameScreen').style.display = 'block';
+      document.getElementById('winnerScreen').style.display = 'none';
+      
+      gameState.gameStarted = true;
+      gameState.gamePhase = 'playing';
+    }
+
+    // Reset game
+    function resetGame() {
+      if (confirm('Are you sure you want to restart the game?')) {
+        // Reset game state
+        gameState = {
+          currentPlayer: 1,
+          gameStarted: false,
+          currentVerse: null,
+          verseIndex: 0,
+          timer: null,
+          timeLeft: 30,
+          audioEnabled: true,
+          selectedCard: null,
+          gamePhase: 'setup'
+        };
+        
+        // Reset players
+        players = {
+          1: { name: 'Player 1', avatar: '👨', cards: [], score: 10 },
+          2: { name: 'Player 2', avatar: '👩', cards: [], score: 10 }
+        };
+        
+        // Show setup screen
+        document.getElementById('setupScreen').style.display = 'block';
+        document.getElementById('gameScreen').style.display = 'none';
+        document.getElementById('winnerScreen').style.display = 'none';
+        
+        // Clear form
+        document.getElementById('player1Name').value = '';
+        document.getElementById('player2Name').value = '';
+        document.querySelectorAll('.avatar').forEach(el => el.classList.remove('selected'));
+      }
+    }
+
+    // Play again
+    function playAgain() {
+      resetGame();
+    }
+
+    // Online multiplayer functions
+    function showLocalMode() {
+      document.getElementById('localModeSetup').style.display = 'flex';
+      document.getElementById('onlineModeSetup').style.display = 'none';
+      gameState.gameMode = 'local';
+    }
+
+    function showOnlineMode() {
+      document.getElementById('localModeSetup').style.display = 'none';
+      document.getElementById('onlineModeSetup').style.display = 'block';
+      gameState.gameMode = 'online';
+      
+      // Show hosting notice if running as local file
+      if (window.location.protocol === 'file:') {
+        document.getElementById('hostingNotice').style.display = 'block';
+      } else {
+        document.getElementById('hostingNotice').style.display = 'none';
+      }
+    }
+
+    function selectOnlineAvatar(avatar) {
+      gameState.selectedAvatar = avatar;
+      document.querySelectorAll('#onlineModeSetup .avatar').forEach(el => {
+        el.classList.remove('selected');
+      });
+      document.querySelector(`#onlineModeSetup .avatar[data-avatar="${avatar}"]`).classList.add('selected');
+    }
+
+    function generateRoomCode() {
+      return Math.random().toString(36).substr(2, 6).toUpperCase();
+    }
+
+    function createRoom() {
+      const playerName = document.getElementById('hostPlayerName').value.trim();
+      if (!playerName) {
+        alert('Please enter your name!');
+        return;
+      }
+      
+      gameState.roomCode = generateRoomCode();
+      gameState.isHost = true;
+      gameState.onlinePlayers = [{
+        name: playerName,
+        avatar: gameState.selectedAvatar || '👨',
+        isHost: true
+      }];
+      
+      // Show room info
+      document.getElementById('roomCodeDisplay').textContent = gameState.roomCode;
+      
+      // Generate proper invite link
+      let inviteUrl;
+      if (window.location.protocol === 'file:') {
+        // If running as local file, show instructions for hosting
+        inviteUrl = `To share this game, please host it on a web server.\n\nRoom Code: ${gameState.roomCode}\n\nFree hosting options:\n• GitHub Pages\n• Netlify\n• Vercel\n• Firebase Hosting`;
+        document.getElementById('inviteLink').value = inviteUrl;
+        document.getElementById('inviteLink').style.height = '100px';
+        document.getElementById('inviteLink').readOnly = true;
+      } else {
+        // If running on web server, generate proper URL
+        inviteUrl = `${window.location.origin}${window.location.pathname}?room=${gameState.roomCode}`;
+        document.getElementById('inviteLink').value = inviteUrl;
+        document.getElementById('inviteLink').style.height = 'auto';
+        document.getElementById('inviteLink').readOnly = true;
+      }
+      
+      document.getElementById('roomInfo').style.display = 'block';
+      document.querySelector('.room-options').style.display = 'none';
+      
+      updatePlayerList();
+      
+      // Check for URL parameters to auto-join
+      checkForRoomJoin();
+    }
+
+    function joinRoom() {
+      const playerName = document.getElementById('joinPlayerName').value.trim();
+      const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
+      
+      if (!playerName || !roomCode) {
+        alert('Please enter all information!');
+        return;
+      }
+      
+      // In a real implementation, this would connect to a server
+      // For now, we'll simulate joining by checking if the room code exists
+      if (gameState.roomCode && gameState.roomCode === roomCode) {
+        gameState.onlinePlayers.push({
+          name: playerName,
+          avatar: gameState.selectedAvatar || '👩',
+          isHost: false
+        });
+        
+        updatePlayerList();
+        alert('Successfully joined the room!');
+        
+        // If we have 2 players, start the game
+        if (gameState.onlinePlayers.length === 2) {
+          startOnlineGame();
+        }
+      } else {
+        alert('Room code is incorrect or room does not exist!');
+      }
+    }
+
+    function updatePlayerList() {
+      const playerListDiv = document.getElementById('playerList');
+      playerListDiv.innerHTML = '';
+      
+      gameState.onlinePlayers.forEach((player, index) => {
+        const playerDiv = document.createElement('div');
+        playerDiv.className = 'player-item';
+        playerDiv.innerHTML = `
+          <span>${player.avatar}</span>
+          <span>${player.name}</span>
+          ${player.isHost ? '<span class="badge">Host</span>' : ''}
+        `;
+        playerListDiv.appendChild(playerDiv);
+      });
+      
+      // Show waiting message if only 1 player
+      if (gameState.onlinePlayers.length === 1) {
+        const waitingDiv = document.createElement('div');
+        waitingDiv.className = 'waiting-message';
+        waitingDiv.textContent = 'Waiting for second player...';
+        playerListDiv.appendChild(waitingDiv);
+      }
+    }
+
+    function copyInviteLink() {
+      const inviteLink = document.getElementById('inviteLink');
+      inviteLink.select();
+      inviteLink.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+      alert('Invite link copied! Send this link to your friends to join.');
+    }
+
+    function leaveRoom() {
+      gameState.roomCode = null;
+      gameState.isHost = false;
+      gameState.onlinePlayers = [];
+      document.getElementById('roomInfo').style.display = 'none';
+      document.querySelector('.room-options').style.display = 'flex';
+    }
+
+    function checkForRoomJoin() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomCode = urlParams.get('room');
+      
+      if (roomCode) {
+        document.getElementById('roomCode').value = roomCode;
+        showOnlineMode();
+        // Auto-focus on player name input
+        document.getElementById('joinPlayerName').focus();
+      }
+    }
+
+    function startLocalGame() {
+      const player1Name = document.getElementById('player1Name').value.trim();
+      const player2Name = document.getElementById('player2Name').value.trim();
+      
+      if (!player1Name || !player2Name) {
+        alert('Please enter names for both players!');
+        return;
+      }
+      
+      players[1].name = player1Name;
+      players[2].name = player2Name;
+      
+      // Initialize game
+      initGame();
+      
+      // Show game screen
+      document.getElementById('setupScreen').style.display = 'none';
+      document.getElementById('gameScreen').style.display = 'block';
+      document.getElementById('winnerScreen').style.display = 'none';
+      
+      gameState.gameStarted = true;
+      gameState.gamePhase = 'playing';
+    }
+
+    function startOnlineGame() {
+      if (gameState.onlinePlayers.length !== 2) {
+        alert('Need 2 players to start!');
+        return;
+      }
+      
+      // Set up players from online data
+      players[1].name = gameState.onlinePlayers[0].name;
+      players[1].avatar = gameState.onlinePlayers[0].avatar;
+      players[2].name = gameState.onlinePlayers[1].name;
+      players[2].avatar = gameState.onlinePlayers[1].avatar;
+      
+      // Initialize game
+      initGame();
+      
+      // Show game screen
+      document.getElementById('setupScreen').style.display = 'none';
+      document.getElementById('gameScreen').style.display = 'block';
+      document.getElementById('winnerScreen').style.display = 'none';
+      
+      gameState.gameStarted = true;
+      gameState.gamePhase = 'playing';
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set default avatars
+      selectAvatar(1, '👨');
+      selectAvatar(2, '👩');
+      selectOnlineAvatar('👨');
+      
+      // Check for room join from URL
+      checkForRoomJoin();
+    });
+  </script>
+</body>
+</html>
